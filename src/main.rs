@@ -1,3 +1,6 @@
+use std::io::{Error, ErrorKind};
+
+// exrenral crares
 use structopt::StructOpt;
 use url::{Url, ParseError};
 
@@ -22,6 +25,11 @@ fn main() {
    		std::process::exit(1);
    }
 
+   if let Err(e) = validate_destination(&args.destination) {
+   		eprintln!("Failed to parse destination!\n{}", e);
+   		std::process::exit(1);
+   }
+
    println!("{:?}", args);
 }
 
@@ -39,4 +47,13 @@ fn validate_url(url: &str) -> Result<(), ParseError> {
 	}
 
 	Err(ParseError::IdnaError)
+}
+
+fn validate_destination(destination: &str) -> Result<(), Error> {
+	let supported_destinations = ["deezer", "spotify"];
+    if supported_destinations.contains(&destination) {
+    	return Ok(());
+    }
+
+    Err(Error::new(ErrorKind::NotFound, "Destination option not yet supported"))
 }
